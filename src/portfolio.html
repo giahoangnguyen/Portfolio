@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio - Gia Nguyen</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --bg-section: #1e1e1e;
+      --text-light: #e0e0e0;
+      --text-muted: #aaaaaa;
+      --accent: #bb86fc;
+      --gradient-start: #121212;
+      --gradient-end: #333333;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family:'Roboto',sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      overflow-x:hidden;
+      position:relative;
+    }
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
+    header {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: var(--text-light);
+      padding: 100px 20px;
+      text-align:center;
+      clip-path: ellipse(100% 85% at 50% 15%);
+    }
+    header h1 { font-size:3.5rem; margin-bottom:10px; }
+    header .typed-text { font-size:1.2rem; color: var(--text-muted); }
+    header p { font-size:0.9rem; opacity:0.8; }
+    nav { position:fixed; top:20px; right:20px; z-index:2; }
+    nav a { color: var(--text-light); margin-left:20px; text-decoration:none; font-weight:700; transition: color .3s; }
+    nav a.active, nav a:hover { color: var(--accent); }
+    .container { width:90%; max-width:1200px; margin:60px auto; }
+    section { margin-bottom:60px; }
+    section h2 {
+      color: var(--accent);
+      font-size:2rem;
+      margin-bottom:20px;
+      position:relative;
+    }
+    section h2::after {
+      content: '';
+      width:50px;
+      height:4px;
+      background: var(--accent);
+      position:absolute;
+      left:0; bottom:-8px;
+      border-radius:2px;
+    }
+    section.parallax {
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      padding: 60px 0;
+      color: var(--text-light);
+    }
+    #about.parallax { background-image: url('https://images.unsplash.com/photo-1508610048659-a06acd0b069f?auto=format&fit=crop&w=1350&q=80'); }
+    #projects.parallax { background-image: url('https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=1350&q=80'); }
+    .card {
+      background: var(--bg-section);
+      padding:20px;
+      border-radius:10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      margin-bottom:20px;
+      color: var(--text-light);
+    }
+    /* Updated Skills List */
+    .skills-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      list-style: none;
+      padding: 0;
+    }
+    .skills-list li {
+      background: rgba(255,255,255,0.05);
+      padding: 10px 15px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .skills-list li::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(187,134,252,0.2), transparent 70%);
+      transform: rotate(25deg);
+    }
+    .skills-list li span {
+      position: relative;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    .projects-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
+    .projects-grid img { width:100%; border-radius:10px; transition: transform .3s; }
+    .projects-grid img:hover { transform: scale(1.03); filter: brightness(1.1); }
+    #lightboxOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:10; }
+    #lightboxOverlay img { max-width:80%; max-height:80%; border-radius:5px; }
+    form { display:flex; flex-direction:column; }
+    form input, form textarea { padding:12px; margin-bottom:15px; border:1px solid #444; border-radius:5px; background:#222; color: var(--text-light); }
+    form input:focus, form textarea:focus { outline:none; border-color: var(--accent); }
+    form button { padding:12px; border:none; border-radius:5px; background:var(--accent); color:#fff; font-size:1rem; cursor:pointer; transition: transform .2s; }
+    form button:hover { transform: scale(1.05); }
+    .success-msg { display: none; color: lightgreen; margin-top: 10px; }
+    footer { background:#111; color: var(--text-muted); text-align:center; padding:15px; }
+    @media(max-width:768px) { nav { display:none; } }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <header>
+    <nav id="navbar">
+      <a href="#about">About</a>
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <h1>Hoang Gia Nguyen</h1>
+    <div class="typed-text" id="typed"></div>
+    <p>Computer Science Student</p>
+    <p>+1 (613) 770-2162 | <a href="mailto:nguyenhoanggia041004@gmail.com" style="color:var(--accent);">nguyenhoanggia041004@gmail.com</a> | <a href="https://github.com/giahoangnguyen" style="color:var(--accent);">github.com/giahoangnguyen</a></p>
+  </header>
+  <div class="container">
+    <section id="about" class="parallax" data-aos="fade-up">
+      <h2>About Me</h2>
+      <div class="card">
+        <p>I am a Computer Science student at Queen's University with a GPA of 4.13/4.30. I am passionate about AI development and microservices architecture.</p>
+      </div>
+    </section>
+    <section id="education" data-aos="fade-up" data-aos-delay="100">
+      <h2>Education</h2>
+      <div class="card">
+        <h3>Queen's University, Kingston, ON</h3>
+        <p>Bachelor of Computing (Honours), GPA: 4.13/4.30 (Sept 2022 - Present)</p>
+        <ul style="list-style:disc;padding-left:20px;">
+          <li>Dean’s Honour List with Distinction (2023-2025)</li>
+          <li>Relevant Coursework: Computer Architecture, Software Architecture, Operating Systems, Software QA, Data Structures, Algorithms, AI</li>
+        </ul>
+      </div>
+    </section>
+    <section id="skills" data-aos="fade-up" data-aos-delay="200">
+      <h2>Skills</h2>
+      <div class="card">
+        <ul class="skills-list">
+          <li><span>Programming: C, Python, Java, JavaScript, Assembly, HTML/CSS, Bash</span></li>
+          <li><span>Frameworks: React, Flask</span></li>
+          <li><span>Tools: Git, Docker, Postman, CapRover</span></li>
+          <li><span>Databases: SQL, MongoDB</span></li>
+          <li><span>Math & AI: MATLAB, Maple, Algorithms, Data Structures</span></li>
+        </ul>
+      </div>
+    </section>
+    <section id="experience" data-aos="fade-up" data-aos-delay="300">
+      <h2>Experience</h2>
+      <div class="card">
+        <h3>AI Intern - Nexle Corporation (May 2024 - Sep 2024)</h3>
+        <ul style="list-style:disc;padding-left:20px;">
+          <li>Integrated document-processing chatbot with vector DB query capabilities</li>
+          <li>Built fine-tuning APIs and AI Librarian retrieval system</li>
+          <li>Deployed on Docker & CapRover with performance optimizations</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Teaching Assistant - Queen’s University (Sep 2024 - Present)</h3>
+        <ul style="list-style:disc;padding-left:20px;">
+          <li>Assisted in CISC151 & APSC141 labs and office hours (~5h/week)</li>
+          <li>Designed assignments on prediction & clustering algorithms</li>
+        </ul>
+      </div>
+    </section>
+    <section id="projects" class="parallax" data-aos="fade-up" data-aos-delay="400">
+      <h2>Projects</h2>
+      <div class="projects-grid">
+        <div class="card" data-tilt><img src="images/flight_booking.jpg" alt="Flight Booking Platform" /><h3>Flight Booking Platform</h3><p>React, Flask & MongoDB with 92% test coverage.</p></div>
+        <div class="card" data-tilt><img src="images/ocr.jpeg" alt="OCR Tool" /><h3>OCR Text Extraction Tool</h3><p>Python & Tesseract OCR, Dockerized for scalable text indexing.</p></div>
+      </div>
+    </section>
+    <section id="contact" data-aos="fade-up" data-aos-delay="500">
+      <h2>Contact</h2>
+      <div class="card">
+        <form id="contactForm">
+          <input type="text" id="name" placeholder="Your Name" required />
+          <input type="email" id="email" placeholder="Email" required />
+          <textarea id="message" rows="4" placeholder="Message" required></textarea>
+          <button type="submit">Send Message</button>
+          <p class="success-msg" id="successMsg">Thank you! Your message has been sent.</p>
+        </form>
+      </div>
+    </section>
+  </div>
+  <div id="lightboxOverlay"><img src="" alt="Expanded Project" id="lightboxImage" /></div>
+  <footer><p>&copy; 2025 Gia Nguyen. All rights reserved.</p></footer>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+  <script>
+    const canvas = document.getElementById('bgCanvas'); const ctx = canvas.getContext('2d'); function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; } window.addEventListener('resize',resize); resize(); const particles=[]; class Particle{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.vx=(Math.random()-0.5)*0.3;this.vy=(Math.random()-0.5)*0.3;this.size=Math.random()*2+1;}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>canvas.width)this.vx*=-1;if(this.y<0||this.y>canvas.height)this.vy*=-1;}draw(){ctx.fillStyle='rgba(255,255,255,0.2)';ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();}}for(let i=0;i<150;i++)particles.push(new Particle());function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animate);}animate(); AOS.init({duration:1000,once:true});new Typed('#typed',{strings:['AI Developer', 'Software Design'],typeSpeed:50,backSpeed:25,loop:true});VanillaTilt.init(document.querySelectorAll('[data-tilt]'),{max:12,speed:400});document.querySelectorAll('.skills-list li').forEach(li=>{new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)li.style.transform='translateX(0)';});},{threshold:0.5}).observe(li);});const overlay=document.getElementById('lightboxOverlay'),imgEl=document.getElementById('lightboxImage');document.querySelectorAll('.projects-grid img').forEach(img=>img.addEventListener('click',()=>{imgEl.src=img.src;overlay.style.display='flex';}));overlay.addEventListener('click',()=>overlay.style.display='none');window.addEventListener('scroll',()=>{document.querySelectorAll('nav a').forEach(link=>{const sec=document.querySelector(link.hash);const pos=window.scrollY+80;if(sec.offsetTop<=pos&&sec.offsetTop+sec.offsetHeight>pos)link.classList.add('active');else link.classList.remove('active');});});document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();document.getElementById('successMsg').style.display='block';});
+  </script>
+</body>
+</html>
